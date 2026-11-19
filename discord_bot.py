@@ -50,7 +50,8 @@ MAX_HISTORY_TURNS = 14  # Lưu khoảng 7 lượt hỏi - đáp gần nhất đ�
 intents = discord.Intents.default()
 intents.message_content = True
 
-bot = commands.Bot(command_prefix="!", intents=intents)
+# Tắt help_command mặc định của discord.py để sử dụng lệnh !help tùy chỉnh
+bot = commands.Bot(command_prefix="!", intents=intents, help_command=None)
 
 
 def is_authorized(user_id: int) -> bool:
