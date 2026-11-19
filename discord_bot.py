@@ -511,7 +511,12 @@ async def on_message(message: discord.Message):
 
 
 async def health_check_handler(request):
-    """Health check endpoint cho Cloud Web Service (Render, Railway, v.v.)"""
+    """Health check endpoint siêu nhẹ cho Cron-job và Uptime monitor (tránh lỗi output too large)"""
+    return web.Response(text="OK", content_type="text/plain")
+
+
+async def web_ui_handler(request):
+    """Giao diện web trực quan khi truy cập trang chủ /"""
     html_content = f"""
     <!DOCTYPE html>
     <html lang="ja">
@@ -541,8 +546,10 @@ async def start_web_server():
     """Khởi động web server phụ trợ để Cloud xác nhận health check $PORT"""
     port = int(os.getenv("PORT", 8080))
     app = web.Application()
-    app.router.add_get("/", health_check_handler)
+    app.router.add_get("/", web_ui_handler)
     app.router.add_get("/health", health_check_handler)
+    app.router.add_head("/health", health_check_handler)
+    app.router.add_head("/", health_check_handler)
     runner = web.AppRunner(app)
     await runner.setup()
     site = web.TCPSite(runner, "0.0.0.0", port)
