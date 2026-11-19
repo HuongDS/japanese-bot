@@ -1,9 +1,10 @@
 # Japanese Kaiwa AI Friend - Bot Luyện Tiếng Nhật 24/7 Qua Discord
 
 Bot Discord đóng vai người bạn thân người Nhật (Yuki - ユキ):
-- Mỗi sáng chủ động nhắn tin hỏi thăm đời sống thường ngày theo giờ hẹn (mặc định 08:30 sáng, múi giờ Việt Nam).
-- Đề xuất một chủ đề Kaiwa mới mỗi ngày để luyện phản xạ giao tiếp tiếng Nhật.
-- Gợi ý cách nói tự nhiên chuẩn người bản xứ và giải thích ngữ pháp khi cần.
+- Nhận biết khung giờ thực tế tại Nhật Bản (Tokyo GMT+9): Tự động thay đổi trạng thái sinh hoạt (sáng đi tàu điện, trưa ăn Bento, chiều uống cà phê, tối xem Anime, đêm khuya nhắc bạn đi ngủ sớm).
+- Giao tiếp bằng Giọng nói 2 chiều (Voice Note / TTS & Speech-to-Text): Tự động gửi kèm file âm thanh phát âm tiếng Nhật chuẩn người bản xứ trong mỗi tin nhắn, đồng thời nghe và nhận diện được tin nhắn thoại (Voice Message) tiếng Nhật của bạn.
+- Văn phong tiếng Nhật đời thường (LINE-style & Aizuchi): Sử dụng tự nhiên các từ đệm cảm thán (Aizuchi) và ngữ điệu bạn bè thân thiết thay vì văn phong sách giáo khoa cứng nhắc.
+- Mỗi sáng chủ động nhắn tin hỏi thăm đời sống thường ngày theo giờ hẹn (mặc định 08:30 sáng, múi giờ Việt Nam) và đề xuất chủ đề Kaiwa mới.
 - Điều chỉnh độ khó linh hoạt theo trình độ JLPT (N5, N4, N3, N2, N1).
 - Bộ nhớ ngữ cảnh (Conversation Memory) giúp cuộc đối thoại diễn ra liền mạch.
 - Hoạt động 24/7 trên Cloud (Render, Railway, VPS) thông qua Docker.
@@ -14,14 +15,17 @@ Bot Discord đóng vai người bạn thân người Nhật (Yuki - ユキ):
 
 | Lệnh | Ý nghĩa và Cách sử dụng |
 | :--- | :--- |
-| !daily | Nhận ngay tin nhắn hỏi thăm và chủ đề Kaiwa hôm nay (không cần đợi giờ hẹn). |
+| !daily | Nhận ngay tin nhắn hỏi thăm theo khung giờ Tokyo và chủ đề Kaiwa kèm giọng nói. |
+| !voice [on\|off\|nanami\|aoi\|mayu\|keita] | Bật/tắt tự động gửi giọng nói hoặc đổi giọng đọc (nữ/nam). |
+| !speak [câu tiếng Nhật] | Yêu cầu bot phát âm một câu tiếng Nhật bất kỳ (hoặc gõ `!speak` để đọc lại tin nhắn vừa rồi). |
+| !time | Xem giờ thực tế tại Tokyo (GMT+9) và trạng thái sinh hoạt hiện tại của Yuki. |
 | !topic [chủ đề] | Đổi chủ đề hội thoại mới (Ví dụ: `!topic anime`, `!topic du lịch Tokyo` hoặc gõ `!topic` để bot tự chọn). |
 | !level [n5\|n4\|n3\|n2\|n1] | Xem hoặc thay đổi trình độ tiếng Nhật (Ví dụ: `!level N4`, `!level N3`). |
 | !reset | Làm mới bộ nhớ trò chuyện để bắt đầu cuộc trò chuyện mới từ đầu. |
 | !model [tên_model] | Xem hoặc đổi model GPT (`gpt-4o`, `gpt-4o-mini`). |
-| !status | Kiểm tra trạng thái bot, model AI, trình độ Kaiwa, giờ hẹn nhắn tin. |
+| !status | Kiểm tra trạng thái bot, giờ Tokyo, cấu hình giọng nói, trình độ Kaiwa. |
 | !help | Xem danh sách hướng dẫn chi tiết các lệnh. |
-| Nhắn tin tự do | Gõ tiếng Nhật hoặc tiếng Việt tự nhiên trong kênh hoặc tin nhắn riêng (DM), bot sẽ phản hồi ngay. |
+| Nhắn chữ hoặc Gửi Voice Chat | Gõ tiếng Nhật/tiếng Việt hoặc gửi tin nhắn thoại (Voice Message), bot sẽ phản hồi kèm giọng nói. |
 
 ---
 
@@ -83,6 +87,8 @@ DAILY_CHECKIN_HOUR=8
 DAILY_CHECKIN_MINUTE=30
 JAPANESE_LEVEL=N4-N3
 JAPANESE_BOT_NAME=Yuki (ユキ)
+VOICE_ENABLED=true
+JAPANESE_VOICE=nanami
 ```
 
 Ghi chú về các biến cấu hình:
@@ -90,6 +96,8 @@ Ghi chú về các biến cấu hình:
 - `DAILY_CHECKIN_HOUR`: Giờ nhắn tin hàng ngày (theo múi giờ Việt Nam UTC+7, ví dụ: 8 là 8 giờ sáng).
 - `DAILY_CHECKIN_MINUTE`: Phút nhắn tin hàng ngày (ví dụ: 30).
 - `JAPANESE_LEVEL`: Cấp độ tiếng Nhật mặc định (`N5`, `N4`, `N4-N3`, `N3`, `N2`, `N1`).
+- `VOICE_ENABLED`: Bật hoặc tắt tự động gửi kèm file giọng đọc tiếng Nhật (`true` hoặc `false`).
+- `JAPANESE_VOICE`: Giọng đọc mặc định (`nanami`, `aoi`, `mayu`, `keita`).
 
 ---
 
@@ -111,6 +119,8 @@ Ghi chú về các biến cấu hình:
    - `DAILY_CHECKIN_HOUR`: `8`
    - `DAILY_CHECKIN_MINUTE`: `30`
    - `JAPANESE_LEVEL`: `N4-N3`
+   - `VOICE_ENABLED`: `true`
+   - `JAPANESE_VOICE`: `nanami`
 6. Nhấn "Create Web Service". Render sẽ tự động build Docker và duy trì bot hoạt động 24/7.
 
 ---
@@ -125,4 +135,4 @@ Ghi chú về các biến cấu hình:
    ```bash
    python discord_bot.py
    ```
-3. Mở Discord và gửi lệnh `!help` hoặc `!daily` để bắt đầu luyện tập.
+3. Mở Discord và gửi lệnh `!help`, `!time` hoặc `!daily` để bắt đầu luyện tập.
