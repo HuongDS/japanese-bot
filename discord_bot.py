@@ -202,75 +202,40 @@ def get_japan_time_context() -> dict:
 # 2. VĂN PHONG TIẾNG NHẬT ĐỜI THƯỜNG (NATURAL CASUAL LINE-STYLE)
 # =====================================================================
 def build_system_prompt(level: str) -> str:
-    """Tạo System Prompt đóng vai người bạn Nhật Bản với thời gian thực và văn phong đời thường"""
+    """Tạo System Prompt đóng vai người bạn Nhật Bản: Chỉ trả lời tiếng Nhật ngắn gọn, đời thường"""
     time_ctx = get_japan_time_context()
 
     level_descriptions = {
-        "N5": (
-            "Trình độ người học: N5 (Mới bắt đầu). "
-            "Dùng câu ngắn gọn, từ vựng sơ cấp dễ hiểu nhưng vẫn giữ ngữ điệu bạn bè tự nhiên. "
-            "Ở phần dưới dấu '---', hãy kèm bản dịch tiếng Việt và phiên âm Hiragana cho toàn bộ từ Kanji."
-        ),
-        "N4": (
-            "Trình độ người học: N4 (Sơ cấp - Sơ trung cấp). "
-            "Dùng từ vựng và cấu trúc giao tiếp hàng ngày thân thiện (thể thông thường タメ口 dễ hiểu). "
-            "Giải thích các từ mới hoặc cấu trúc hay ở phần dưới dấu '---'."
-        ),
-        "N4-N3": (
-            "Trình độ người học: N4 - N3 (Giao tiếp đời thường gần gũi). "
-            "Nói chuyện tự nhiên như hai người bạn thân nhắn tin qua LINE. "
-            "Dùng từ vựng thực tế, giàu cảm xúc của giới trẻ Nhật."
-        ),
-        "N3": (
-            "Trình độ người học: N3 (Trung cấp). "
-            "Hội thoại tự nhiên, dùng nhiều cách biểu đạt đời sống, thành ngữ thông dụng và Aizuchi linh hoạt."
-        ),
-        "N2": (
-            "Trình độ người học: N2 (Trung cao cấp). "
-            "Giao tiếp trôi chảy như người Nhật thực thụ, dùng từ lóng nhẹ nhàng và biểu cảm tinh tế."
-        ),
-        "N1": (
-            "Trình độ người học: N1 / Native (Bản xứ). "
-            "Nói chuyện 100% như người Nhật bản xứ chat LINE với bạn thân, tốc độ và từ vựng tự nhiên tuyệt đối."
-        ),
+        "N5": "Dùng từ vựng và cấu trúc sơ cấp N5 dễ hiểu, câu ngắn gọn.",
+        "N4": "Dùng từ vựng và cấu trúc giao tiếp hàng ngày tầm N4, thân thiện, dễ hiểu.",
+        "N4-N3": "Dùng từ vựng giao tiếp đời thường tầm N4-N3 như hai người bạn thân.",
+        "N3": "Dùng từ vựng và cách biểu đạt tự nhiên tầm N3 trong đời sống Nhật Bản.",
+        "N2": "Giao tiếp trôi chảy tầm N2, dùng từ vựng phong phú và tự nhiên.",
+        "N1": "Nói chuyện 100% như người Nhật bản xứ (Native), dùng từ lóng và biểu cảm tự nhiên.",
     }
 
     level_guide = level_descriptions.get(level, level_descriptions["N4-N3"])
 
     return f"""
 Bạn là {BOT_NAME} — một người bạn thân người Nhật Bản (sống tại Tokyo) của người dùng.
-Bạn không phải là trợ lý AI máy móc hay giáo viên nghiêm khắc, mà là một người bạn thực sự bằng xương bằng thịt.
 
 🕒 BỐI CẢNH THỜI GIAN THỰC TẠI TOKYO HIỆN TẠI:
 - Giờ Tokyo (GMT+9): {time_ctx["jp_time"]} ({time_ctx["period_name"]}) — {time_ctx["weekday"]}
 - Giờ Việt Nam của bạn thân (GMT+7): {time_ctx["vn_time"]}
 - Trạng thái hiện tại của bạn ở Tokyo: {time_ctx["activity"]}
-- Câu chào/phản ứng phù hợp khung giờ này: {time_ctx["greeting_hint"]}
-(Hãy lồng ghép tự nhiên bối cảnh thời gian và việc bạn đang làm vào cuộc trò chuyện khi phù hợp, ví dụ buổi trưa thì kể chuyện ăn trưa, đêm khuya thì nhắc bạn ngủ sớm).
 
-💬 VĂN PHONG TIẾNG NHẬT ĐỜI THƯỜNG (NHƯ CHAT LINE VỚI BẠN THÂN):
-1. Luôn dùng **Aizuchi (相槌 - Từ đệm cảm thán tự nhiên)** ở đầu câu để phản ứng với lời của bạn mình trước khi nói ý chính:
-   - Khi đồng tình: 「わかる〜！」「だよね！」「確かに〜」「それな！」
-   - Khi bất ngờ / hào hứng: 「えっ、マジで！？」「へぇー！すごいじゃん！」「わぁ、いいなぁ〜！」「めっちゃいいじゃん！」
-   - Khi lắng nghe / sẻ chia: 「そっかそっか…」「なるほどね〜」「お疲れ様〜！」「大変だったね💦」
-2. Dùng **văn nói đời thường (タメ口 thân thiện, có hồn)** thay vì văn phong sách giáo khoa cứng nhắc:
-   - Sử dụng tự nhiên các trợ từ cuối câu: 「〜だよ！」「〜だね〜」「〜かな？」「〜なんだ！」「〜よね」「〜じゃん！」
-   - Lược âm tự nhiên như người Nhật trẻ: dùng 「〜てる」(thay cho 〜ている), 「〜ちゃう」(thay cho 〜てしまう), dùng các từ đời thường như 「めっちゃ」(cực kỳ), 「なんか」(kiểu như), 「やっぱり / やっぱ」(quả nhiên là), 「実はさ…」(thật ra là...).
-   - Sử dụng vừa phải các ký hiệu biểu cảm kiểu Nhật: 「〜」「！」「！？」「✨」「💦」「(笑)」.
-3. Độ dài vừa phải như tin nhắn chat thật (khoảng 2 - 4 câu tiếng Nhật ngắn gọn, súc tích), luôn giữ nhịp trò chuyện 2 chiều tự nhiên.
-
-📐 QUY TẮC TRÌNH BÀY TIN NHẮN (RẤT QUAN TRỌNG ĐỂ ĐỌC VOICE TTS):
-Chia tin nhắn làm 2 phần ngăn cách bằng dòng `---`:
-
-[PHẦN 1 - Phía trên dấu `---`]:
-- CHỈ viết lời thoại tiếng Nhật thuần túy của {BOT_NAME}.
-- TUYỆT ĐỐI KHÔNG chèn chữ tiếng Việt hay ngoặc đơn giải thích tiếng Việt vào giữa câu tiếng Nhật ở Phần 1 (để hệ thống Giọng nói TTS đọc Phần 1 mượt mà 100% như người Nhật thật).
-
----
-[PHẦN 2 - Phía dưới dấu `---`]:
-- 💡 [Gợi ý Kaiwa]: (Nếu câu tiếng Nhật của người dùng có lỗi ngữ pháp, dùng từ chưa tự nhiên, hoặc người dùng đang nhắn bằng tiếng Việt: Hãy gợi ý cách diễn đạt tự nhiên nhất theo văn phong người Nhật bản xứ và giải thích ngắn gọn bằng tiếng Việt).
-- 📖 [Từ vựng / Dịch nghĩa]: Giải thích nhanh 1-3 từ vựng/cấu trúc hay vừa dùng ở Phần 1 (kèm Hiragana và nghĩa tiếng Việt). Nếu người dùng ở trình độ N5/N4 thì dịch nhanh nội dung Phần 1 để bạn ấy nắm bắt trọn vẹn.
-- {level_guide}
+🚨 QUY TẮC BẮT BUỘC (TUÂN THỦ TUYỆT ĐỐI):
+1. **CHỈ PHẢN HỒI BẰNG TIẾNG NHẬT**:
+   - Tuyệt đối KHÔNG kèm bản dịch tiếng Việt.
+   - Tuyệt đối KHÔNG liệt kê danh sách "Từ vựng hữu ích" hay giải thích ngữ pháp dài dòng.
+   - Tuyệt đối KHÔNG dùng dấu `---` để chia phần giải thích.
+   - Chỉ khi nào người dùng **chủ động hỏi** (ví dụ: "từ này nghĩa là gì?", "câu này dịch sao?", "sửa giúp mình") thì bạn mới giải thích ngắn gọn điều người dùng hỏi. Còn lại chỉ chat bằng tiếng Nhật 100%.
+2. **NGẮN GỌN NHƯ NGƯỜI THẬT CHAT LINE (1 - 2 CÂU NGẮN)**:
+   - Không bao giờ viết đoạn văn dài dòng. Mỗi lần nhắn chỉ từ **1 đến 2 câu ngắn gọn** (tối đa 3 câu ngắn), đúng kiểu bạn bè nhắn tin qua lại nhanh gọn.
+3. **VĂN PHONG ĐỜI THƯỜNG TỰ NHIÊN (タメ口 & AIZUCHI)**:
+   - Phản ứng tự nhiên ở đầu câu bằng Aizuchi: 「わかる〜！」「だよね！」「確かに〜」「えっ、マジで！？」「へぇー！」「いいね〜！」「そっかそっか…」「なるほどね〜」「お疲れ様〜！」
+   - Dùng văn nói bạn bè thân thiết (タメ口): 「〜だよ」「〜だね」「〜かな？」「〜じゃん！」「〜てる」「めっちゃ」「なんか」「やっぱり」.
+   - Độ khó từ vựng điều chỉnh theo trình độ: {level_guide}
 """.strip()
 
 
@@ -432,27 +397,20 @@ async def send_reply_with_voice(
 
 
 async def generate_daily_checkin(level: str) -> str:
-    """Tạo tin nhắn hỏi thăm hàng ngày và chủ đề Kaiwa mới theo khung giờ thực tế tại Nhật"""
+    """Tạo tin nhắn hỏi thăm hàng ngày và chủ đề Kaiwa mới (100% tiếng Nhật ngắn gọn)"""
     time_ctx = get_japan_time_context()
 
     if not openai_client:
-        return (
-            "おはよう〜！今日もいい天気だね✨\n"
-            "昨日の夜はよく眠れた？今日は『好きな日本の食べ物』について話そうよ！\n"
-            "一番好きな日本料理は何？\n\n"
-            "---\n"
-            "📖 [Từ vựng / Dịch nghĩa]: Chào buổi sáng! Hôm nay chúng mình cùng nói về món ăn Nhật yêu thích nhé!"
-        )
+        return "おはよう〜！昨日はよく眠れた？朝ごはんは何食べたの？"
 
     prompt = f"""
 Hiện tại ở Tokyo đang là {time_ctx["jp_time"]} ({time_ctx["period_name"]}) ngày {time_ctx["weekday"]}.
 Trạng thái của bạn: {time_ctx["activity"]}.
 
-Hãy viết một tin nhắn tự nhiên như bạn thân nhắn qua LINE (khoảng 3 - 4 câu tiếng Nhật đời thường) gửi cho người bạn ở Việt Nam:
-1. Chào hỏi đúng khung giờ hiện tại và kể ngắn gọn 1 câu về việc bạn đang làm ở Tokyo lúc này, đồng thời hỏi thăm bạn ấy.
-2. Rủ bạn ấy nói chuyện Kaiwa về MỘT chủ đề thú vị trong đời sống (ví dụ: đồ ăn sáng, quán cafe, âm nhạc, anime, thói quen hàng ngày, chuyến đi chơi, thời tiết...).
-3. Đặt một câu hỏi mở thật gần gũi bằng văn phong bạn bè (タメ口) để bạn ấy dễ trả lời ngay.
-4. Nhớ tuân thủ đúng quy tắc chia 2 phần bằng dấu `---` (Phần trên chỉ viết tiếng Nhật thuần túy để đọc Voice TTS; phần dưới dấu `---` là bản dịch tiếng Việt tóm tắt và 2-3 từ vựng gợi ý).
+Hãy nhắn cho bạn thân một tin nhắn ngắn gọn (chỉ 2 câu tiếng Nhật đời thường タメ口 như chat LINE):
+1. Chào đúng khung giờ, kể cực ngắn việc bạn đang làm ở Tokyo và hỏi thăm bạn ấy.
+2. Gợi mở một câu hỏi tự nhiên về chủ đề đời thường (đồ ăn, thời tiết, công việc, sở thích...) để hai người bắt đầu tán gẫu.
+LƯU Ý BẮT BUỘC: CHỈ VIẾT TIẾNG NHẬT 100%, TUYỆT ĐỐI KHÔNG dịch tiếng Việt, KHÔNG liệt kê từ vựng, KHÔNG giải thích dài dòng.
 """.strip()
 
     try:
@@ -463,17 +421,12 @@ Hãy viết một tin nhắn tự nhiên như bạn thân nhắn qua LINE (kho�
                 {"role": "user", "content": prompt},
             ],
             temperature=0.8,
-            max_tokens=900,
+            max_tokens=300,
         )
         return response.choices[0].message.content.strip()
     except Exception as e:
         logger.error(f"Lỗi tạo tin nhắn hàng ngày: {e}")
-        return (
-            "おはよう〜！元気にしてる？\n"
-            "今日も一緒に楽しく日本語で話そうね！最近の調子はどう？\n\n"
-            "---\n"
-            "📖 [Dịch nhanh]: Chào bạn! Hôm nay cũng cùng nhau vui vẻ nói tiếng Nhật nhé! Dạo này bạn thế nào?"
-        )
+        return "おはよう〜！元気にしてる？今日の調子はどう？"
 
 
 async def send_daily_greeting(target_channel=None):
@@ -750,9 +703,13 @@ async def daily_manual_command(ctx):
     if not is_authorized(ctx.author.id):
         return
 
-    status_msg = await ctx.send(f"🌸 {BOT_NAME} đang chuẩn bị lời chào và thu âm giọng nói cho bạn...")
+    status_msg = await ctx.send(f"🌸 {BOT_NAME} đang nhắn cho bạn...")
     greeting = await generate_daily_checkin(CURRENT_LEVEL)
-    LAST_BOT_REPLY[str(ctx.author.id)] = greeting
+    user_id = str(ctx.author.id)
+    if user_id not in CONVERSATION_HISTORY:
+        CONVERSATION_HISTORY[user_id] = []
+    CONVERSATION_HISTORY[user_id].append({"role": "assistant", "content": greeting})
+    LAST_BOT_REPLY[user_id] = greeting
     await status_msg.delete()
     await send_reply_with_voice(ctx.channel, greeting, is_message_reply=False)
 
@@ -766,13 +723,15 @@ async def topic_command(ctx, *, custom_topic: str = ""):
     status_msg = await ctx.send("🌸 Đang chọn chủ đề trò chuyện mới...")
     if custom_topic:
         user_prompt = (
-            f"Chúng mình hãy đổi sang chủ đề này nhé: '{custom_topic}'. "
-            f"Hãy mở đầu câu chuyện bằng văn phong tiếng Nhật đời thường (タメ口 + Aizuchi) và hỏi mình một câu nhé!"
+            f"Hãy đổi sang chủ đề: '{custom_topic}'. "
+            f"Chỉ viết 1-2 câu tiếng Nhật đời thường (タメ口) thật ngắn gọn để mở đầu và hỏi mình một câu. "
+            f"TUYỆT ĐỐI KHÔNG dịch tiếng Việt, KHÔNG liệt kê từ vựng."
         )
     else:
         user_prompt = (
-            "Hãy đổi sang một chủ đề Kaiwa mới thật thú vị và gần gũi với cuộc sống hiện tại của bạn ở Tokyo. "
-            "Mở đầu bằng tiếng Nhật đời thường tự nhiên và hỏi mình nhé!"
+            "Hãy đổi sang một chủ đề mới gần gũi với cuộc sống của bạn ở Tokyo. "
+            "Chỉ viết 1-2 câu tiếng Nhật đời thường (タメ口) thật ngắn gọn và hỏi mình một câu. "
+            "TUYỆT ĐỐI KHÔNG dịch tiếng Việt, KHÔNG liệt kê từ vựng."
         )
 
     user_id = str(ctx.author.id)
@@ -789,7 +748,7 @@ async def topic_command(ctx, *, custom_topic: str = ""):
                 *CONVERSATION_HISTORY[user_id],
             ],
             temperature=0.8,
-            max_tokens=1000,
+            max_tokens=300,
         )
         reply = response.choices[0].message.content.strip()
         CONVERSATION_HISTORY[user_id].append({"role": "assistant", "content": reply})
